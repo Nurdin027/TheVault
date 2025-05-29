@@ -1,0 +1,1141 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "TheVault",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://amarnurdinwork.pythonanywhere.com",
+      "description": "Production server"
+    },
+    {
+      "url": "http://127.0.0.1:5000",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "User"
+    },
+    {
+      "name": "Address"
+    }
+  ],
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "access_token": "string",
+                        "refresh_token": "string",
+                        "user_detail": {
+                          "id": "string",
+                          "full_name": "string",
+                          "username": "string",
+                          "email": "string",
+                          "add_time": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Incorrect username or password"
+                    },
+                    "count": {
+                      "example": null
+                    },
+                    "data": {
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "full_name": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "email": {
+                    "type": "string",
+                    "required": false
+                  },
+                  "username": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "password": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "id": "string",
+                        "full_name": "string",
+                        "username": "string",
+                        "email": "string",
+                        "add_time": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/token/refresh": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "RefreshToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Refresh token success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "access_token": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid Token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "invalid_token"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Missing Authorization Header"
+                    },
+                    "count": {
+                      "example": null
+                    },
+                    "data": {
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profile": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "AccessToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get data successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "id": "string",
+                        "full_name": "string",
+                        "username": "string",
+                        "email": "string",
+                        "add_time": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    },
+                    "count": {
+                      "example": null
+                    },
+                    "data": {
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profile/update": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "AccessToken": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "full_name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update data successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "id": "string",
+                        "full_name": "string",
+                        "username": "string",
+                        "email": "string",
+                        "add_time": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    },
+                    "count": {
+                      "example": null
+                    },
+                    "data": {
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/daerah/provinsi": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "responses": {
+          "200": {
+            "description": "Get data successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "id": "string",
+                        "name": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/daerah/kab-kota/{id}": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Provinsi ID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get data successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "id": "string",
+                        "name": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/daerah/kecamatan/{id}": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Kota-Kab ID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get data successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "id": "string",
+                        "name": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/daerah/kel-desa/{id}": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Kecamatan ID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get data successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "id": "string",
+                        "name": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/address": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "security": [
+          {
+            "AccessToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get data successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "id": "string",
+                        "name": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Address"
+        ],
+        "security": [
+          {
+            "AccessToken": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "provinsi_id": {
+                    "type": "string"
+                  },
+                  "provinsi": {
+                    "type": "string"
+                  },
+                  "kota_id": {
+                    "type": "string"
+                  },
+                  "kota": {
+                    "type": "string"
+                  },
+                  "kecamatan_id": {
+                    "type": "string"
+                  },
+                  "kecamatan": {
+                    "type": "string"
+                  },
+                  "kelurahan_id": {
+                    "type": "string"
+                  },
+                  "kelurahan": {
+                    "type": "string"
+                  },
+                  "full_address": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Add data successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "id": "string",
+                        "name": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/address/{id}": {
+      "patch": {
+        "tags": [
+          "Address"
+        ],
+        "security": [
+          {
+            "AccessToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Address ID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "provinsi_id": {
+                    "type": "string"
+                  },
+                  "provinsi": {
+                    "type": "string"
+                  },
+                  "kota_id": {
+                    "type": "string"
+                  },
+                  "kota": {
+                    "type": "string"
+                  },
+                  "kecamatan_id": {
+                    "type": "string"
+                  },
+                  "kecamatan": {
+                    "type": "string"
+                  },
+                  "kelurahan_id": {
+                    "type": "string"
+                  },
+                  "kelurahan": {
+                    "type": "string"
+                  },
+                  "full_address": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update data successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "id": "string",
+                        "name": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Address"
+        ],
+        "security": [
+          {
+            "AccessToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Address ID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete data successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {
+                        "id": "string",
+                        "name": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "AccessToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "RefreshToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "name": "RefreshToken"
+      }
+    },
+    "schemas": {
+      "SuccessList": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "example": "Success"
+          },
+          "count": {
+            "type": "integer",
+            "example": 0
+          },
+          "data": {
+            "type": "array",
+            "example": []
+          }
+        }
+      },
+      "SuccessObject": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "example": "Success"
+          },
+          "count": {
+            "type": "integer",
+            "example": 0
+          },
+          "data": {
+            "type": "object",
+            "example": {}
+          }
+        }
+      },
+      "Unauthorized": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "error"
+          },
+          "message": {
+            "type": "string",
+            "example": "Unauthorized"
+          },
+          "count": {
+            "example": null
+          },
+          "data": {
+            "example": null
+          }
+        }
+      },
+      "Forbidden": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "error"
+          },
+          "message": {
+            "type": "string",
+            "example": "Forbidden"
+          },
+          "count": {
+            "example": null
+          },
+          "data": {
+            "example": null
+          }
+        }
+      },
+      "ServerError": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "error"
+          },
+          "message": {
+            "type": "string",
+            "example": "Error: Error message"
+          },
+          "count": {
+            "example": null
+          },
+          "data": {
+            "example": null
+          }
+        }
+      }
+    }
+  }
+}
