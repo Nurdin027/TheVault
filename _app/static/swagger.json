@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "https://amarnurdinwork.pythonanywhere.com",
+      "url": "https://amarnurdin.pythonanywhere.com",
       "description": "Production server"
     },
     {
