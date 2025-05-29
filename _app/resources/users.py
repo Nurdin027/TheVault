@@ -1,4 +1,5 @@
-from flask import request
+from datetime import timedelta
+
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from flask_restful import Resource
 
@@ -44,7 +45,7 @@ class Login(Resource):
         try:
             user = UsersModel.get_user(par['username'])
             if user and user.decrypt_password(par['password']):
-                access_token = create_access_token(identity=user.id, fresh=True, expires_delta=False)
+                access_token = create_access_token(identity=user.id, fresh=True)
                 refresh_token = create_refresh_token(user.id)
                 data = {
                     "access_token": access_token,
@@ -53,6 +54,21 @@ class Login(Resource):
                 }
                 return responseapi(data=data)
             return responseapi(401, "error", "Incorrect username or password")
+        except Exception as e:
+            print(e)
+            return responseapi(500, "error", f"Error: {e}")
+
+
+class RefreshToken(Resource):
+    @classmethod
+    @jwt_required(refresh=True)
+    def post(cls):
+        try:
+            access_token = create_access_token(identity=get_jwt_identity(), fresh=True)
+            data = {
+                "access_token": access_token,
+            }
+            return responseapi(data=data)
         except Exception as e:
             print(e)
             return responseapi(500, "error", f"Error: {e}")

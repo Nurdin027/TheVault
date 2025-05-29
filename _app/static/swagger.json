@@ -203,7 +203,7 @@
         }
       }
     },
-    "/api/auth/token/refresh": {
+    "/api/auth/token-refresh": {
       "post": {
         "tags": [
           "User"
@@ -329,7 +329,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "Access token must be refreshed",
             "content": {
               "application/json": {
                 "schema": {
@@ -337,11 +337,11 @@
                   "properties": {
                     "status": {
                       "type": "string",
-                      "example": "error"
+                      "example": "token_expired"
                     },
                     "message": {
                       "type": "string",
-                      "example": "Unauthorized"
+                      "example": "The token has expired."
                     },
                     "count": {
                       "example": null

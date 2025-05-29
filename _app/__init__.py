@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import Flask
 from dotenv import load_dotenv
 from os import getenv as cfg
@@ -16,7 +18,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = cfg('DB_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = cfg('DEBUG') == 'True'
 app.config['SECRET_KEY'] = cfg('SECRET_KEY')
 app.config['JWT_SECRET_KEY'] = cfg('JWT_SECRET_KEY')
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = cfg('JWT_ACCESS_TOKEN_EXPIRES')
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=int(cfg('JWT_ACCESS_TOKEN_EXPIRES') or 3600))
 app.config['SWAGGER_UI_JSONEDITOR'] = True
 # endregion
 
@@ -48,11 +50,44 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
 )
 app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
-from _app.resources.users import Login, Register, Profile, UpdateProfile
+# region JWT auth util
+from _app.global_func import responseapi
+
+
+@jwt.expired_token_loader
+def expired_token_callback(eh=None, ed=None):
+    print(eh, ed)
+    return responseapi(401, "token_expired", "The token has expired.")
+
+
+@jwt.invalid_token_loader
+def invalid_token_callback(e):
+    return responseapi(401, "invalid_token", e)
+
+
+@jwt.unauthorized_loader
+def missing_token_callback(e):
+    return responseapi(401, "authorization_required", e)
+
+
+@jwt.needs_fresh_token_loader
+def token_not_fresh_callback():
+    return responseapi(401, "fresh_token_required", "The token is not fresh.")
+
+
+@jwt.revoked_token_loader
+def revoke_token_callback():
+    return responseapi(401, "token_revoked", "The token has been revoked.")
+
+
+# endregion JWT auth util
+
+from _app.resources.users import Login, Register, Profile, UpdateProfile, RefreshToken
 from _app.resources.address import Provinsi, KabKota, Kecamatan, Kelurahan, MyAddress
 
 api.add_resource(Login, "/api/auth/login")
 api.add_resource(Register, "/api/auth/register")
+api.add_resource(RefreshToken, "/api/auth/token-refresh")
 api.add_resource(Profile, "/api/profile")
 api.add_resource(UpdateProfile, "/api/profile/update")
 
