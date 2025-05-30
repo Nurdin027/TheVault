@@ -25,8 +25,9 @@ app.config['SWAGGER_UI_JSONEDITOR'] = True
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-api = Api(app)
+api = Api(app, prefix='/api')
 jwt = JWTManager(app)
+jwt._set_error_handler_callbacks(app)
 
 SWAGGER_URL = '/swagger'
 API_URL = '/static/swagger.json'
@@ -85,18 +86,18 @@ def revoke_token_callback():
 from _app.resources.users import Login, Register, Profile, UpdateProfile, RefreshToken
 from _app.resources.address import Provinsi, KabKota, Kecamatan, Kelurahan, MyAddress
 
-api.add_resource(Login, "/api/auth/login")
-api.add_resource(Register, "/api/auth/register")
-api.add_resource(RefreshToken, "/api/auth/token-refresh")
-api.add_resource(Profile, "/api/profile")
-api.add_resource(UpdateProfile, "/api/profile/update")
+api.add_resource(Login, "/auth/login")
+api.add_resource(Register, "/auth/register")
+api.add_resource(RefreshToken, "/auth/token-refresh")
+api.add_resource(Profile, "/profile")
+api.add_resource(UpdateProfile, "/profile/update")
 
-api.add_resource(Provinsi, "/api/daerah/provinsi")
-api.add_resource(KabKota, "/api/daerah/kab-kota/<iden>")
-api.add_resource(Kecamatan, "/api/daerah/kecamatan/<iden>")
-api.add_resource(Kelurahan, "/api/daerah/kel-desa/<iden>")
+api.add_resource(Provinsi, "/daerah/provinsi")
+api.add_resource(KabKota, "/daerah/kab-kota/<iden>")
+api.add_resource(Kecamatan, "/daerah/kecamatan/<iden>")
+api.add_resource(Kelurahan, "/daerah/kel-desa/<iden>")
 
-api.add_resource(MyAddress, "/api/address", "/api/address/<iden>")
+api.add_resource(MyAddress, "/address", "/address/<iden>")
 
 
 @app.route('/')
