@@ -12,46 +12,15 @@ from flask_swagger_ui import get_swaggerui_blueprint
 
 load_dotenv()
 app = Flask(__name__)
-
-# region Config
-app.config['SQLALCHEMY_DATABASE_URI'] = cfg('DB_URL')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = cfg('DEBUG') == 'True'
-app.config['SECRET_KEY'] = cfg('SECRET_KEY')
-app.config['JWT_SECRET_KEY'] = cfg('JWT_SECRET_KEY')
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=int(cfg('JWT_ACCESS_TOKEN_EXPIRES') or 3600))
-app.config['SWAGGER_UI_JSONEDITOR'] = True
-# endregion
+app.config.from_pyfile('config.py')
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
 api = Api(app, prefix='/api')
 jwt = JWTManager(app)
 jwt._set_error_handler_callbacks(app)
 
-SWAGGER_URL = '/swagger'
-API_URL = '/static/swagger.json'
-swagger_ui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={
-        'app_name': "TheVault",
-        "persistAuthorization": True,
-        "servers": [
-            {
-                "url": "http://localhost:5000",
-                "description": "Development server"
-            },
-            {
-                "url": cfg("PROD_DOMAIN"),
-                "description": "Production server"
-            }
-        ]
-    }
-)
-app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
-
-# region JWT auth util
+# region JWT auth utils
 from _app.global_func import responseapi
 
 
@@ -81,9 +50,37 @@ def revoke_token_callback():
     return responseapi(401, "token_revoked", "The token has been revoked.")
 
 
-# endregion JWT auth util
+# endregion JWT auth utils
 
-from _app.resources.users import Login, Register, Profile, UpdateProfile, RefreshToken
+from _app.seeder import Seeder
+
+Seeder.seed()
+
+# region Swagger
+SWAGGER_URL = '/swagger'
+API_URL = '/static/swagger.json'
+swagger_ui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "TheVault",
+        "persistAuthorization": True,
+        "servers": [
+            {
+                "url": "http://localhost:5000",
+                "description": "Development server"
+            },
+            {
+                "url": cfg("PROD_DOMAIN"),
+                "description": "Production server"
+            }
+        ]
+    }
+)
+app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
+# endregion Swagger
+
+from _app.resources.users import Login, Register, Profile, UpdateProfile, RefreshToken, JobTitle, Employee
 from _app.resources.address import Provinsi, KabKota, Kecamatan, Kelurahan, MyAddress
 
 api.add_resource(Login, "/auth/login")
@@ -91,6 +88,9 @@ api.add_resource(Register, "/auth/register")
 api.add_resource(RefreshToken, "/auth/token-refresh")
 api.add_resource(Profile, "/profile")
 api.add_resource(UpdateProfile, "/profile/update")
+
+api.add_resource(JobTitle, "/job-title", "/job-title/<iden>")
+api.add_resource(Employee, "/employee", "/employee/<iden>")
 
 api.add_resource(Provinsi, "/daerah/provinsi")
 api.add_resource(KabKota, "/daerah/kab-kota/<iden>")
